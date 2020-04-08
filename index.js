@@ -98,7 +98,7 @@ server.put('/users/:id', (req, res) => {
             message: 'User Not Found'
         })
     }
-
+})
 server.delete('/users/:id', (req, res) => {
     //verify user exists
     const user = db.getUserById(req.params.id);
@@ -115,4 +115,4 @@ server.delete('/users/:id', (req, res) => {
 
 server.listen(8080, () => {
     console.log('server started at 8080');
-})
+});
