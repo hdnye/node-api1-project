@@ -106,7 +106,7 @@ server.delete('/users/:id', (req, res) => {
         db.deleteUser(user.id);
         //return success message. 204 is a successful empty response
         res.status(204).end();
-    } nelse {
+    } else {
         res.status(404).json({
             message: 'User Not Found'
         })
