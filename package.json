@@ -6,5 +6,8 @@
   "repository": "https://github.com/hdnye/node-api1-project.git",
   "author": "hdnye",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

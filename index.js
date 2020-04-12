@@ -33,72 +33,92 @@ const db = require('./database.js');
 
 //creates our server instance
 const server = express();
-server.use(express.json()) //middleware that does something we need
+
+//middleware that does something we need
 //express handles all the requests
+server.use(express.json()); 
+
+
+//CRUD operations and server endpoints 
 
 // Read data
 server.get('/', (req, res) => {
-
     // this route handler does everything the above code does
     res.json({ message: 'hello, world' }); 
 })
 
 server.get('/users', (req, res) => {
     const users = db.getUsers();
-    res.json(users);
-})
-
-server.get('/users/:id', (req, res) => { //the specified request (:id here) will be saved as a variable
-    const userId = req.params.id
-    const user = db.getUserById(userId);
-
-    //logic to make sure user value exists
-    if(user) { // if truthy stmt
-        res.json(user)
+    if(user) {
+    res.status(200).json(users);
     } else {
-        res.status(404).json({ // send message back to client
-            message: 'User Not Found'
+        res.status(500).json({
+            message: "The users information could not be retrieved.",
         })
     }
+})
 
+//the specified request (:id here) will be saved as a variable
+server.get('/users/:id', (req, res) => { 
+    const userId = req.params.id
+    const user = db.getUserById(userId);
+    //logic to make sure user value exists 
+    // if truthy stmt
+    if(user) { 
+        res.json(user)
+    } else {
+        res.status(404).json({ 
+            // send message back to client
+            message: "The user information could not be retrieved." ,
+        })
+    }
 })
 
 //create a new user. can have multiple route handlers on the same end point as long as the methods are different
 server.post('/users', (req, res) => {
-    if(!req.body.name) {
-        return res.status(404).json({
-            message: 'Need a user name!'
+    //error message to make sure the req is complete
+   if(!req.body.name) {
+       return res.status(404).json({
+           message: "Please provide name and bio for the user." ,
         })
-    }
+    }  
     const newUser = db.createUser({
-        name: req.body.name,
+         name: req.body.name,
     })
     // send the new info back to the client
     res.status(201).json(newUser);
-
 })
 
 //Update specific user
 server.put('/users/:id', (req, res) => {
-//     if(!user) {
-//         res.status(404).json({
-//             message: 'User Not Found'
-//         })
-//     } 
+    if(!user) {
+        res.status(404).json({
+            message: "The user with the specified ID does not exist.",
+        })
+    } 
 //     const newData = db.updateUser();
 // })
     const user = db.getUserById(req.params.id)
     if(user) {
       const updatedUser = db.updateUser(user.id, {
                 name: req.body.name || user.name,
-        })
-        res.json(updatedUser)
+         })
+        res.status(200).json(updatedUser)
     } else {
-        res.status(404).json({
-            message: 'User Not Found'
-        })
-    }
-})
+      if(!req.body.name) {
+            return res.status(404).json({
+                message: "Please provide name and bio for the user." ,
+            })
+      } else {
+          if(!req.body.name || !user.name) {
+              return res.status(500).json({
+                  message: "The user information could not be modified.",
+              })
+          }
+      }
+    } 
+})  
+
 server.delete('/users/:id', (req, res) => {
     //verify user exists
     const user = db.getUserById(req.params.id);
@@ -108,9 +128,15 @@ server.delete('/users/:id', (req, res) => {
         res.status(204).end();
     } else {
         res.status(404).json({
-            message: 'User Not Found'
+            message: "The user with the specified ID does not exist." ,
         })
-    }
+     } else {
+         if(!user.id) {
+             res.status(500).json({
+                 message: "The user could not be removed.",
+             })
+         }
+     }
 })
 
 server.listen(8080, () => {
