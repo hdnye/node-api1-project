@@ -1,0 +1,10 @@
+{
+  "name": "node-api1-project",
+  "version": "1.0.0",
+  "description": "Introduction to building backend server",
+  "main": "index.js",
+  "repository": "https://github.com/hdnye/node-api1-project.git",
+  "author": "hdnye",
+  "license": "MIT",
+  "private": true
+}
