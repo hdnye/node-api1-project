@@ -49,7 +49,7 @@ server.get('/', (req, res) => {
 
 server.get('/users', (req, res) => {
     const users = db.getUsers();
-    if(user) {
+    if(users) {
     res.status(200).json(users);
     } else {
         res.status(500).json({
@@ -122,21 +122,21 @@ server.put('/users/:id', (req, res) => {
 server.delete('/users/:id', (req, res) => {
     //verify user exists
     const user = db.getUserById(req.params.id);
+    if(!user.id) {
+        res.status(404).json({
+            message: "The user with the specified ID does not exist." ,
+        })
+    } 
     if(user) {
         db.deleteUser(user.id);
         //return success message. 204 is a successful empty response
         res.status(204).end();
     } else {
-        res.status(404).json({
-            message: "The user with the specified ID does not exist." ,
+        //should I add a new endpoint here for each error message? 
+        res.status(500).json({
+            message: "The user could not be removed.",
         })
-     } else {
-         if(!user.id) {
-             res.status(500).json({
-                 message: "The user could not be removed.",
-             })
-         }
-     }
+     } 
 })
 
 server.listen(8080, () => {
